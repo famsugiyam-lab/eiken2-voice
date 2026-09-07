@@ -7,7 +7,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <title>英検2級 音声入力</title>
   <style>
-    *{box-sizing:border-box}html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f5f7fb;margin:0;color:#222;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
     main{width:min(100%,680px);margin:0 auto;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
     .card{background:#fff;padding:clamp(16px,4.5vw,24px);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
@@ -16,7 +17,7 @@
     .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
     button{min-height:52px;border:0;border-radius:12px;padding:12px 14px;font-size:16px;font-weight:700;cursor:pointer;touch-action:manipulation;margin:0}
     .primary{background:#1a73e8;color:#fff}.soft{background:#e8f0fe;color:#174ea6}.version{margin-top:16px;font-size:12px;color:#888;text-align:center}.status{min-height:24px;margin-top:12px}
-    @media(max-width:520px){.actions{grid-template-columns:1fr}button{width:100%}main{padding-top:max(10px,env(safe-area-inset-top))}textarea{min-height:220px}}
+    @media(max-width:768px){.actions{grid-template-columns:1fr}button{width:100%}main{padding-top:max(10px,env(safe-area-inset-top))}textarea{min-height:220px}}
   </style>
 </head>
 <body>
@@ -25,7 +26,7 @@
   <p class="muted">話した日本語を、英検アプリの「自分の日本語」欄へ送ります。</p>
   <textarea id="text" placeholder="ここに認識した日本語が入ります。"></textarea>
   <div class="actions"><button class="soft" onclick="startVoice()">音声認識を開始</button><button class="primary" onclick="sendBack()">英検アプリへ送る</button></div>
-  <p id="status" class="muted status"></p><div class="version">Voice page v1.9</div>
+  <p id="status" class="muted status"></p><div class="version">Voice page v2.0</div>
 </div></main>
 <script>
 const EIKEN_APP_URL='https://script.google.com/macros/s/AKfycby1Kx9Lnhfr_KGTSoNrCLi6oIptBmI53UNV4zjzhpqHPxHZyPuo-TYg_HmnKcqQITYrlQ/exec';
@@ -40,7 +41,7 @@ function startVoice(){
  recognition.onerror=e=>{const map={'not-allowed':'マイクが許可されていません。ブラウザのサイト設定でマイクを許可してください。','no-speech':'音声を聞き取れませんでした。もう一度お試しください。','audio-capture':'マイクを利用できません。','network':'音声認識の通信エラーが発生しました。'};setStatus(map[e.error]||('音声入力エラー: '+e.error))};
  recognition.onend=()=>{recognition=null};try{recognition.start()}catch(e){setStatus('音声認識を開始できませんでした。')}
 }
-function sendBack(){const text=document.getElementById('text').value.trim();if(!text){alert('先に音声入力してください。');return}setStatus('英検アプリへ移動します...');window.location.assign(EIKEN_APP_URL+'?voice='+encodeURIComponent(text))}
+function sendBack(){const text=document.getElementById('text').value.trim();if(!text){setStatus('先に音声入力してください。');return}setStatus('英検アプリへ移動します...');window.location.assign(EIKEN_APP_URL+'?voice='+encodeURIComponent(text))}
 </script>
 </body>
 </html>
