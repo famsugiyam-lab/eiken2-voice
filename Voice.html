@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>英検2級 音声入力</title>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:#f5f7fb;margin:0;color:#222}
+    main{max-width:680px;margin:auto;padding:24px}
+    .card{background:#fff;padding:22px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+    textarea{width:100%;box-sizing:border-box;min-height:160px;padding:12px;font-size:18px;border:1px solid #ccc;border-radius:10px}
+    button{border:0;border-radius:10px;padding:12px 16px;margin:10px 8px 0 0;font-size:16px;cursor:pointer}
+    .primary{background:#1a73e8;color:#fff}.soft{background:#e8f0fe;color:#174ea6}.muted{color:#666}
+  </style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>🎤 音声入力</h1>
+    <p class="muted">マイクで話した日本語を、元の英検アプリへ戻します。</p>
+    <textarea id="text" placeholder="ここに認識した日本語が入ります。"></textarea>
+    <div>
+      <button class="soft" onclick="startVoice()">音声認識を開始</button>
+      <button class="primary" onclick="sendBack()">英検アプリへ送る</button>
+    </div>
+    <p id="status" class="muted"></p>
+  </div>
+</main>
+<script>
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){document.getElementById('status').textContent='このブラウザは音声認識に対応していません。Chromeでお試しください。';return;}
+  const r=new SR();
+  r.lang='ja-JP';r.interimResults=false;r.continuous=false;
+  document.getElementById('status').textContent='音声を聞いています...';
+  r.onresult=e=>{
+    document.getElementById('text').value=e.results[0][0].transcript;
+    document.getElementById('status').textContent='認識しました。';
+  };
+  r.onerror=e=>document.getElementById('status').textContent='音声入力エラー: '+e.error;
+  r.start();
+}
+function sendBack(){
+  const text=document.getElementById('text').value.trim();
+  if(!text){alert('先に音声入力してください。');return;}
+  if(window.opener){
+    window.opener.postMessage({type:'EIKEN_VOICE_TEXT',text:text},'*');
+    document.getElementById('status').textContent='英検アプリへ送りました。このタブを閉じてください。';
+  }else{
+    navigator.clipboard?.writeText(text);
+    document.getElementById('status').textContent='元の画面が見つからないため、文字をクリップボードへコピーしました。';
+  }
+}
+</script>
+</body>
+</html>
